@@ -16,7 +16,6 @@ class RestaurantViewController: UIViewController {
     
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var typeLabel: UILabel!
-    @IBOutlet weak var foodLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
 
     @IBOutlet weak var segBtn: UISegmentedControl!
@@ -39,12 +38,10 @@ class RestaurantViewController: UIViewController {
         //style nav bar
         navigationController?.navigationBar.barTintColor = UIColor(red: 45.0/255.0, green: 140.0/255.0, blue: 255.0/255.0, alpha: 1.0);
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        
-        
+
         //set view from object
         if restaurant != nil {
             self.nameLabel.text = restaurant?.name
-            self.foodLabel.text = restaurant?.food
             self.addressLabel.text = restaurant?.address
             self.typeLabel.text = restaurant?.type
             if restaurant?.img != nil {
@@ -72,11 +69,7 @@ class RestaurantViewController: UIViewController {
         addressLabel.layer.shadowOffset = CGSize(width: 3, height: 3)
         addressLabel.layer.shadowOpacity = 0.2
         addressLabel.layer.shadowRadius = 1
-        
-        foodLabel.layer.shadowOffset = CGSize(width: 3, height: 3)
-        foodLabel.layer.shadowOpacity = 0.2
-        foodLabel.layer.shadowRadius = 1
-        
+               
         segBtn.layer.shadowOffset = CGSize(width: 3, height: 3)
         segBtn.layer.shadowOpacity = 0.2
         segBtn.layer.shadowRadius = 1
@@ -100,12 +93,14 @@ class RestaurantViewController: UIViewController {
             self.mapView.hidden = false;
             self.picLine.hidden = true;
             self.mapLine.hidden = false
+            self.addressLabel.text = restaurant?.address
         case 1: //hide map, show image picker
             print("Looking at image. Map hidden.")
             self.imageView.hidden = false
             self.mapView.hidden = true;
             self.mapLine.hidden = true
             self.picLine.hidden = false
+            self.addressLabel.text = restaurant?.food
         default:
             print("An error occured")
         }

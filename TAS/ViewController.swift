@@ -14,6 +14,8 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
     @IBOutlet weak var navBar: UINavigationItem!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var sort_seg_control: UIBarButtonItem!
+    @IBOutlet weak var filter_seg_control: UISegmentedControl!
     var pass: Restaurant? = nil
 
     
@@ -21,6 +23,14 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
     var dataViewController: NSFetchedResultsController = NSFetchedResultsController()
     
     var deleteIndexPath: NSIndexPath? = nil
+    
+    // added
+    var sort_by_name: Bool = true
+    var sort_by_rating: Bool = false
+    var filter_sit_in: Bool = false
+    var filter_fast_food: Bool = false
+    var toggle_sort: Bool = true
+    // end added
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,6 +40,7 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
         navigationController?.navigationBar.barTintColor = UIColor(red: 45.0/255.0, green: 140.0/255.0, blue: 255.0/255.0, alpha: 1.0);
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
+        navigationController?.toolbar.hidden = false;
         
         //fetch core data
         dataViewController = getFetchResultsController()
@@ -56,8 +67,24 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
     func listFetchRequest() -> NSFetchRequest {
         
         let fetchRequest = NSFetchRequest(entityName: "Restaurant")
-        let sortDescripter = NSSortDescriptor(key: "name", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescripter]
+        
+        if(sort_by_name) {
+            let sortDescripter = NSSortDescriptor(key: "name", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescripter]
+        }
+        else if(sort_by_rating) {
+            let sortDescripter = NSSortDescriptor(key: "rating", ascending: false)
+            fetchRequest.sortDescriptors = [sortDescripter]
+        }
+        else if(filter_sit_in) {
+            let sortDescripter = NSSortDescriptor(key: "type", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescripter]
+        }
+        else if(filter_fast_food) {
+            let sortDescripter = NSSortDescriptor(key: "type", ascending: false)
+            fetchRequest.sortDescriptors = [sortDescripter]
+        }
+
         
         return fetchRequest
         
@@ -85,7 +112,6 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
         let cell = self.tableView.dequeueReusableCellWithIdentifier("restaurant", forIndexPath: indexPath) as! RestaurantTableViewCell
         let restaurant = dataViewController.objectAtIndexPath(indexPath) as! Restaurant
         
-
         //set cell label
         cell.name.text = restaurant.name
         var rating: String = ""
@@ -101,8 +127,28 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
         
         cell.img.contentMode = .ScaleAspectFill
         cell.img.layer.masksToBounds = true
-                
+        
+        if(filter_sit_in && restaurant.type == "Fast Food") {
+            cell.name.enabled = false
+            cell.userInteractionEnabled = false
+            cell.rating.enabled = false
+            cell.img.backgroundColor = UIColor.clearColor()
+        }
+        else if(filter_fast_food && restaurant.type == "Sit In") {
+            cell.name.enabled = false
+            cell.userInteractionEnabled = false
+            cell.rating.enabled = false
+            cell.img.backgroundColor = UIColor.clearColor()
+        }
+        else {
+            // Re-enable
+            cell.name.enabled = true
+            cell.userInteractionEnabled = true
+            cell.rating.enabled = true
+        }
+        
         return cell
+
     }
     
     func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
@@ -119,7 +165,6 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
             let restaurantToDelete = dataViewController.objectAtIndexPath(indexPath) as! Restaurant
             confirmDelete(restaurantToDelete)
         }
-        
     }
     
     /*
@@ -176,6 +221,89 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
             let row = dataViewController.objectAtIndexPath(indexPath!) as! Restaurant
             dest.restaurant = row
         }
+    }
+    
+    
+    @IBAction func filter(sender: UISegmentedControl) {
+        switch filter_seg_control.selectedSegmentIndex {
+        case 0:
+            // call function
+            filter_fast_food = false
+            filter_sit_in = false
+            sort(false)
+            return;
+        case 1:
+            // call function
+            sort_by_rating = false;
+            sort_by_name = false;
+            filter_fast_food = false;
+            filter_sit_in = true;
+            break;
+        case 2:
+            // call function
+            sort_by_rating = false;
+            sort_by_name = false;
+            filter_fast_food = true;
+            filter_sit_in = false;
+            break;
+        default:
+            break;
+        }
+        
+        // re-fetch results
+        dataViewController = getFetchResultsController()
+        dataViewController.delegate = self
+        do {
+            try dataViewController.performFetch()
+        } catch {
+            print("An error occurred")
+        }
+        self.tableView.reloadData()
+    }
+    
+    @IBAction func sort_pressed(sender: UIBarButtonItem) {
+        sort(true)
+        filter_seg_control.selectedSegmentIndex = 0
+    }
+    
+    func sort(toggle: Bool) {
+        if(toggle) {
+            if(toggle_sort) {
+                sort_by_name = false
+                sort_by_rating = true
+                toggle_sort = false
+                filter_sit_in = false
+                filter_fast_food = false
+            }
+            else {
+                sort_by_name = true
+                sort_by_rating = false
+                toggle_sort = true
+                filter_fast_food = false
+                filter_sit_in = false
+            }
+        }
+        else {
+            if(toggle_sort) {
+                sort_by_name = true;
+            }
+            else {
+                sort_by_rating = true;
+            }
+            filter_fast_food = false
+            filter_sit_in = false
+        }
+        
+        
+        // re-fetch results
+        dataViewController = getFetchResultsController()
+        dataViewController.delegate = self
+        do {
+            try dataViewController.performFetch()
+        } catch {
+            print("An error occurred")
+        }
+        self.tableView.reloadData()
     }
 
 

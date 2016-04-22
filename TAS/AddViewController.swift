@@ -64,7 +64,7 @@ class AddViewController: UIViewController, UITextFieldDelegate, NSFetchedResults
         //style nav bar
         navigationController?.navigationBar.barTintColor = UIColor(red: 45.0/255.0, green: 140.0/255.0, blue: 255.0/255.0, alpha: 1.0);
         navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        
+                
         //style with dropshadow
         imageFrame.layer.shadowOffset = CGSize(width: 3, height: 3)
         imageFrame.layer.shadowOpacity = 0.2
