@@ -49,9 +49,9 @@ class AddViewController: UIViewController, UITextFieldDelegate, NSFetchedResults
         self.locManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
             locManager.delegate = self
-            locManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            self.latitude = (locManager.location?.coordinate.latitude)!
-            self.longitude = (locManager.location?.coordinate.longitude)!
+            locManager.desiredAccuracy = kCLLocationAccuracyBest
+            self.latitude = locManager.location!.coordinate.latitude
+            self.longitude = locManager.location!.coordinate.longitude
             
             print("Lattitude: \(latitude)")
             print("Longitude: \(longitude)")

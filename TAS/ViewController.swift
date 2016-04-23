@@ -77,11 +77,11 @@ class ViewController: UIViewController, NSFetchedResultsControllerDelegate {
             fetchRequest.sortDescriptors = [sortDescripter]
         }
         else if(filter_sit_in) {
-            let sortDescripter = NSSortDescriptor(key: "type", ascending: true)
+            let sortDescripter = NSSortDescriptor(key: "type", ascending: false)
             fetchRequest.sortDescriptors = [sortDescripter]
         }
         else if(filter_fast_food) {
-            let sortDescripter = NSSortDescriptor(key: "type", ascending: false)
+            let sortDescripter = NSSortDescriptor(key: "type", ascending: true)
             fetchRequest.sortDescriptors = [sortDescripter]
         }
 
